@@ -1,0 +1,173 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+  
+  .
+```{r}
+#Split Data into 2020 and 2021
+install.packages('dplyr')
+library(dplyr)
+install.packages('readr')
+library(readr)
+install.packages('ggplot2')
+library(ggplot2)
+install.packages("ggthemes")
+library(ggthemes)
+install.packages("lubridate")
+library(lubrdiate)
+install.packages("ggpubr")
+library(ggpubr)
+
+
+
+```
+
+```{r}
+#2020 USA Data Initialization
+WHO_Data <- read.csv("WHO-COVID-19-global-data.csv")
+USAData2020 <- WHO_Data %>%
+  filter("United States of America" == Country) %>%
+  head(364) %>%
+  select(-Country_code, -WHO_region) 
+
+names(USAData2020)
+
+#Renaming Columns for Consistency (2020 US Data)
+USAData2020 <-rename(USAData2020, Date_Reported = "ï..Date_reported")
+USAData2020 <-rename(USAData2020, New_Cases = "New_cases")
+USAData2020 <-rename(USAData2020, Cumulative_Cases = "Cumulative_cases")
+USAData2020 <-rename(USAData2020, New_Deaths = "New_deaths")
+USAData2020 <-rename(USAData2020, Cumulative_Deaths = "Cumulative_deaths")
+
+#2021 USA Data Initialization
+USAData2021 <- WHO_Data %>%
+  filter("United States of America" == Country) 
+
+USAData2021 <- USAData2021[365:729, ] %>%
+  select(-Country_code, -WHO_region)  
+
+#Renaming Columns for Consistency (2021 US Data)          
+USAData2021 <- rename(USAData2021, Date_Reported = "ï..Date_reported") 
+USAData2021 <-rename(USAData2021, New_Cases = "New_cases")
+USAData2021 <-rename(USAData2021, Cumulative_Cases = "Cumulative_cases")
+USAData2021 <-rename(USAData2021, New_Deaths = "New_deaths")
+USAData2021 <-rename(USAData2021, Cumulative_Deaths = "Cumulative_deaths")
+
+#2022 USA Data Initialization (2022 US Data)
+USAData2022 <- WHO_Data %>%
+  filter("United States of America" == Country)
+
+#Up to 5/06/2022
+USAData2022 <- USAData2022[730:855, ] %>%
+  select(-Country_code, -WHO_region)
+
+```
+
+```{r}
+#COVID Case Data (Individual & Cumulative) in 2020
+USAData2020_SS <- USAData2020[1:364,] 
+USAData2020_SS$Date_Reported = 1:364
+
+Year2020NewCases <- ggplot(USAData2020_SS , aes(x = Date_Reported, y = New_Cases)) +
+  geom_line() + ylim(0,250000) +
+  ylab("New Cases (Measured in 1000s)") + xlab("Year 2020 (Measured in Days)") +
+  geom_smooth(method=lm, se=FALSE) + ggtitle("New Cases Per Day in Year 2020") + 
+  theme(plot.title = element_text(hjust = 0.5))
+
+Year2020CumulativeCases <- ggplot(USAData2020_SS , aes(x = Date_Reported, y = Cumulative_Cases)) +
+  geom_line() + ylim(0,20000000) + xlim(0,364) + xlab("Year 2020 (Measured In Days)") + 
+  ylab("Cumulative Cases (Measured in Millions)") + ggtitle("Cumulative Cases in 2020") +
+  theme(plot.title = element_text(hjust = 0.5))
+
+
+Year2020CasesData <- ggarrange(Year2020NewCases, Year2020CumulativeCases)
+Year2020CasesData
+```
+```{r}
+#COVID Death Data (Individual & Cumulative) in 2020
+Year2020NewDeaths <- ggplot(USAData2020_SS , aes(x = Date_Reported, y = New_Deaths)) +
+  geom_line() +  geom_smooth(method=lm, se=FALSE) +xlab("Year 2020 (Measured In Days)") +
+  ylab("Deaths (Measured in Thousands)") +ylim(0,3500) +ggtitle("Daily Deaths in 2020") +
+  theme(plot.title = element_text(hjust = 0.5))
+
+Year2020CumulativeDeaths <- ggplot(USAData2020_SS , aes(x = Date_Reported, y = Cumulative_Deaths)) +
+  geom_line() + ylim(0,350000) + ylab("Deaths (Measured in 100-Thousands)") + xlab("Year 2020 (Measured In Days)") +
+  ggtitle("Cumulative Deaths in 2020") + theme(plot.title = element_text(hjust = 0.5))
+
+
+Year2020DeathStatistics <- ggarrange(Year2020NewDeaths, Year2020CumulativeDeaths)
+Year2020DeathStatistics
+```
+
+```{r}
+#COVID Case Data (Individual & Cumulative) in 2021
+USAData2021_SS <- USAData2021[1:364,] 
+USAData2021_SS$Date_Reported = 1:364
+
+Year2021NewCases <- ggplot(USAData2021_SS , aes(x = Date_Reported, y = New_Cases)) +
+  geom_line() + ylim(0,250000) +
+  ylab("New Cases (Measured in 1000s)") + xlab("Year 2021 (Measured in Days)") +
+  geom_smooth(method=lm, se=FALSE) + ggtitle("New Cases of COVID in Year 2021") + 
+  theme(plot.title = element_text(hjust = 0.5))
+
+Year2021CumulativeCases <- ggplot(USAData2021_SS , aes(x = Date_Reported, y = Cumulative_Cases)) +
+  geom_line() + ylim(20000000,50000000) + xlim(0,364) + xlab("Year 2021 (Measured In Days)") + 
+  ylab("Cumulative Cases (Measured in 10s of Millions)") + ggtitle("Cumulative Cases of COVID") +
+  theme(plot.title = element_text(hjust = 0.5))
+
+Year2021CaseData <- ggarrange(Year2021NewCases, Year2021CumulativeCases)
+Year2021CaseData
+```
+```{r}
+#COVID Death Data (Individual & Cumulative) in 2021
+Year2021NewDeaths <- ggplot(USAData2021_SS , aes(x = Date_Reported, y = New_Deaths)) +
+  geom_line() + ylab("Deaths (Measured in 1000s)") + xlab("Year 2021 (Measured in Days)") +
+  geom_smooth(method=lm, se=FALSE) + ggtitle("Daily Deaths from COVID in Year 2021") + 
+  theme(plot.title = element_text(hjust = 0.5))
+
+Year2021CumulativeDeaths <- ggplot(USAData2021_SS , aes(x = Date_Reported, y = Cumulative_Deaths)) +
+  geom_line() + ylim(350000,800000) + ylab("Deaths (Measured in 100-Thousands)") + xlab("Year 2021 (Measured In Days)") +
+  ggtitle("Cumulative Deaths From COVID") + theme(plot.title = element_text(hjust = 0.5))
+
+Year2021DeathData <- ggarrange(Year2021NewDeaths, Year2021CumulativeDeaths)
+Year2021DeathData
+
+```
+
+```{r}
+#COVID Case Data (Individual & Cumulative) in 2022 (measured till ~5/06/2022)
+USAData2022_SS <- USAData2022[1:125,] 
+USAData2022_SS$Date_Reported = 1:125
+
+Year2022NewCases <- ggplot(USAData2022_SS , aes(x = Date_Reported, y = New_cases)) +
+  geom_line() + geom_smooth(method=lm, se=FALSE) + ggtitle("New Cases of COVID in Year 2022") + 
+  theme(plot.title = element_text(hjust = 0.5)) + xlab("2022 (Measured in Days)") + 
+  ylab("New Cases (Measured in 100-Thousands)")
+
+Year2022CumulativeCases <- ggplot(USAData2022_SS , aes(x = Date_Reported, y = Cumulative_cases)) +
+  geom_line() + ylim(50000000,82000000) + xlab("Year 2022 (Measured In Days)") + 
+  ylab("Cumulative Cases (Measured in 10s of Millions)") + ggtitle("Cumulative Cases of COVID") +
+  theme(plot.title = element_text(hjust = 0.5))
+
+Year2022CaseData <- ggarrange(Year2022NewCases,Year2022CumulativeCases)
+Year2022CaseData
+```
+```{r}
+#COVID Death Data (Individual & Cumulative) in 2022
+Year2022NewDeaths <- ggplot(USAData2022_SS , aes(x = Date_Reported, y = New_deaths)) +
+  geom_line() + ylab("Deaths (Measured in 1000s)") + xlab("Year 2022 (Measured in Days)") +
+  geom_smooth(method=lm, se=FALSE) + ggtitle("Daily Deaths in Year 2022") +
+  theme(plot.title = element_text(hjust = 0.5))
+
+Year2022CumulativeDeaths <- ggplot(USAData2022_SS , aes(x = Date_Reported, y = Cumulative_deaths)) +
+  geom_line() + ylim(700000,1000000)+ xlim(0,125) + xlab("Year 2022 (Measured in Days)") +
+  ylab("Cumulative Deaths (Measured in 100-Thousands)") + ggtitle("Cumulative Deaths from COVID") + 
+  theme(plot.title = element_text(hjust = 0.5))
+
+Year2022DeathData <- ggarrange(Year2022NewDeaths, Year2022CumulativeDeaths)
+Year2022DeathData
+```
+
+
+
