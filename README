@@ -1,0 +1,6 @@
+README
+
+In this project, I gathered COVID data from the World Health Organization. I first organized the data in a way that I may have 3 separate dataframes to
+have data from 2020, 2021, and 2022. I then produced line graphs and plotted lines of best fit, again using the ggplot function provided by R, 
+so that I may visualize the data relating to the number of cases per year, the cumulative amount of cases, the amount of deaths per year, 
+and the cumulative amount of deaths from COVID.
